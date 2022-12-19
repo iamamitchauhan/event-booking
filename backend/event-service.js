@@ -28,19 +28,31 @@ class EventService {
         throw new ApiError(this.statusCodeValidation, 'Duration must be in minutes, allows integer value only');
       }
       const startDatetime = moment(datetime).utc();
-      const endDatetime = moment(datetime).add(duration, 'minutes').utc();
+      const endDatetime = moment(datetime).add((duration * 60), 'second').utc();
       console.log({
         startDatetime,
-        endDatetime
+        endDatetime,
       });
-
-      // check existing events
-      const snapshotStart = await this.db.collection(this.collectionName)
-        .where('start', '>=', Timestamp.fromDate(new Date(startDatetime.toISOString())))
-        .where('start', '<=', Timestamp.fromDate(new Date(endDatetime.toISOString())))
-        .count()
-        .get();
-      if (snapshotStart.data().count) {
+      // count existing events
+    //   {
+    //     "start": "2022-12-20T06:00:00.000Z",   >= . 2022-12-20T06:15:00.000Z
+    //     "start": "2022-12-20T06:00:00.000Z" .    <= . 2022-12-20T06:30:00.000Z
+    // }
+      const [snapshotStart, snapshotEnd] = await Promise.all([
+        this.db.collection(this.collectionName)
+          .where('start', '>=', Timestamp.fromDate(new Date(startDatetime.toISOString())))
+          .where('start', '<=', Timestamp.fromDate(new Date(endDatetime.toISOString())))
+          .orderBy('start')
+          .count()
+          .get(),
+        this.db.collection(this.collectionName)
+          .where('end', '>=', Timestamp.fromDate(new Date(startDatetime.toISOString())))
+          .where('end', '<=', Timestamp.fromDate(new Date(endDatetime.toISOString())))
+          .orderBy('end')
+          .count()
+          .get()
+      ]);
+      if (snapshotStart.data().count || snapshotEnd.data().count) {
         throw new ApiError(this.statusCodeNotAvailable, 'Time slot is not available');
       }
 

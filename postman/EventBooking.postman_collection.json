@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "88b7847e-152d-4c36-8990-d3a835f4b996",
+		"name": "EventBooking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21683537"
+	},
+	"item": [
+		{
+			"name": "Get events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/events?startDate=2022-12-17T05:30:00.000Z&endDate=2022-12-21T06:00:00.000Z",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"events"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2022-12-17T05:30:00.000Z",
+							"description": "Start date, UTC format"
+						},
+						{
+							"key": "endDate",
+							"value": "2022-12-21T06:00:00.000Z",
+							"description": "End date, UTC format"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/events?fromDatetime=2022-12-17T05:30:00.000Z&toDatetime=2022-12-21T06:00:00.000Z",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"events"
+							],
+							"query": [
+								{
+									"key": "fromDatetime",
+									"value": "2022-12-17T05:30:00.000Z",
+									"description": "From datetime, UTC"
+								},
+								{
+									"key": "toDatetime",
+									"value": "2022-12-21T06:00:00.000Z",
+									"description": "End datetime, UTC"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "295"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"127-ktmsc+xBAhcC92uRfnX6zlYPZb4\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 19 Dec 2022 13:30:33 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": \"05SVew4Cb9c5l7sN7Lr6\",\n        \"start\": \"2022-12-20T06:00:00.000Z\",\n        \"end\": \"2022-12-20T06:30:00.000Z\"\n    },\n    {\n        \"id\": \"mOcfg2avJ9gOHQKRfsj8\",\n        \"start\": \"2022-12-20T06:30:00.000Z\",\n        \"end\": \"2022-12-20T07:00:00.000Z\"\n    },\n    {\n        \"id\": \"eWcH7BLUiLWdhxNrjE6Y\",\n        \"start\": \"2022-12-20T07:00:00.000Z\",\n        \"end\": \"2022-12-20T07:30:00.000Z\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Create event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"datetime\": \"2022-12-20T05:30:00.000Z\",\n    \"duration\": 90\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"events"
+					]
+				},
+				"description": "Create event for given datetime and duration.\n\nRequest Body:\n\n- datetime: Required, Start ISO Datetime, UTC datetime\n- duration: Required, Minutes of event, Integer"
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"datetime\": \"2022-12-20T07:00:00.000Z\",\n    \"duration\": 30\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"events"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "97"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"61-lbBvIwNVzbZKgcsFoduAU8irQtE\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 19 Dec 2022 13:30:14 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"eWcH7BLUiLWdhxNrjE6Y\",\n    \"start\": \"2022-12-20T07:00:00.000Z\",\n    \"end\": \"2022-12-20T07:30:00.000Z\"\n}"
+				}
+			]
+		}
+	]
+}
