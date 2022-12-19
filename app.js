@@ -4,6 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const firebaseAdmin = require('./backend/firebase-admin');
+const Error = require('./middlewares/error');
+
 var indexRouter = require('./routes/index');
 var eventsRouter = require('./routes/events');
 
@@ -26,6 +29,9 @@ app.use('/events', eventsRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });
+
+// handle error, for api end
+app.use(Error.errorHandler);
 
 // error handler
 app.use(function (err, req, res, next) {
