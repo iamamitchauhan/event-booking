@@ -19,16 +19,21 @@ router.get('/', async function (req, res, next) {
 });
 
 /* GET free slots */
-router.get('/free-slots', function (req, res, next) {
+router.get('/free-slots', async function (req, res, next) {
   /**
     Return all the free slots available for a given date converted to whatever timezone we pass.
     Params: Date, Timezone
    */
 
-  const { startDate, endDate, timezone } = req.params;
-  res.send({
-    data: []
-  });
+  try {
+    const date = req.query.date;
+    const timezone = req.query.timezone;
+
+    const slots = await eventService.freeSlots(date, timezone);
+    res.send(slots);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Create event
