@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/events?startDate=2022-12-17T05:30:00.000Z&endDate=2022-12-21T06:00:00.000Z",
+					"raw": "http://localhost:3000/events?startDate=2022-12-20T04:00:00.000Z&endDate=2022-12-20T06:00:00.000Z",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -24,12 +24,12 @@
 					"query": [
 						{
 							"key": "startDate",
-							"value": "2022-12-17T05:30:00.000Z",
+							"value": "2022-12-20T04:00:00.000Z",
 							"description": "Start date, UTC format"
 						},
 						{
 							"key": "endDate",
-							"value": "2022-12-21T06:00:00.000Z",
+							"value": "2022-12-20T06:00:00.000Z",
 							"description": "End date, UTC format"
 						}
 					]
@@ -110,7 +110,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"datetime\": \"2022-12-20T05:30:00.000Z\",\n    \"duration\": 90\n}",
+					"raw": "{\n    \"datetime\": \"2022-12-20T05:45:01.000Z\",\n    \"duration\": 30\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -138,7 +138,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"datetime\": \"2022-12-20T07:00:00.000Z\",\n    \"duration\": 30\n}",
+							"raw": "{\n    \"datetime\": \"2022-12-20T05:01:00.000Z\",\n    \"duration\": 30\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -191,7 +191,102 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": \"eWcH7BLUiLWdhxNrjE6Y\",\n    \"start\": \"2022-12-20T07:00:00.000Z\",\n    \"end\": \"2022-12-20T07:30:00.000Z\"\n}"
+					"body": "{\n    \"id\": \"tZbGPmVv5KAtwG9Cu7r4\",\n    \"start\": \"2022-12-20T05:01:00.000Z\",\n    \"end\": \"2022-12-20T05:30:00.000Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get slots",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/events/free-slots?date=2022-12-20&timezone=Asia/Kolkata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"events",
+						"free-slots"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2022-12-20"
+						},
+						{
+							"key": "timezone",
+							"value": "Asia/Kolkata"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/events/free-slots?date=2022-12-20&timezone=Asia/Kolkata",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"events",
+								"free-slots"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2022-12-20"
+								},
+								{
+									"key": "timezone",
+									"value": "Asia/Kolkata"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "447"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1bf-ed0IFIUrTmck1AKkEgizjC0K6Zw\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 20 Dec 2022 06:32:48 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"doctorProfile\": {\n        \"startHours\": \"10:30\",\n        \"endHours\": \"15:30\",\n        \"duration\": 30,\n        \"timezone\": \"Asia/Kolkata\"\n    },\n    \"slotTimezone\": \"Asia/Kolkata\",\n    \"slots\": [\n        \"2022-12-20T10:30:00+05:30\",\n        \"2022-12-20T11:00:00+05:30\",\n        \"2022-12-20T11:30:00+05:30\",\n        \"2022-12-20T12:00:00+05:30\",\n        \"2022-12-20T12:30:00+05:30\",\n        \"2022-12-20T13:00:00+05:30\",\n        \"2022-12-20T13:30:00+05:30\",\n        \"2022-12-20T14:00:00+05:30\",\n        \"2022-12-20T14:30:00+05:30\",\n        \"2022-12-20T15:00:00+05:30\",\n        \"2022-12-20T15:30:00+05:30\"\n    ]\n}"
 				}
 			]
 		}

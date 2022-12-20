@@ -6,7 +6,7 @@ const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 
 class EventService {
 
-  // Congigurations
+  // Configurations
   collectionName = 'events';
   statusCodeValidation = 400;
   statusCodeNotAvailable = 422;
@@ -20,43 +20,60 @@ class EventService {
     // Duration - Duration of slot, in minutes
     duration: 30,
 
-    // Timezone, e.g. 'America/Los_Angeles'
+    // Timezone, e.g. 'America/Los_Angeles', 'Asia/Kolkata'
     timezone: 'Asia/Kolkata'
-
   };
 
+  /**
+   * constructure
+   */
   constructor() {
     this.db = getFirestore();
   }
 
-  async freeSlots(date, timezone) {
-    // TODO: Integrate joi for request data validation
-    if (!date) {
-      throw new ApiError(this.statusCodeValidation, 'Date is required');
-    }
-    if (!this.isDate(date)) {
-      throw new ApiError(this.statusCodeValidation, 'Date is invalid');
-    }
-    if (!timezone) {
-      throw new ApiError(this.statusCodeValidation, 'Timezone is required');
-    }
+  /**
+   * validate iso date format
+   * 
+   * @param {string} str 
+   * @returns 
+   */
+  #isIsoDate(str) {
+    if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) {
+      return false;
+    };
 
+    const d = new Date(str);
+    return d instanceof Date && !isNaN(d) && d.toISOString() === str; // valid date 
+  }
+
+  /**
+   * validate date format
+   * 
+   * @param {string} str 
+   * @returns 
+   */
+  #isDate(str) {
+    if (!/\d{4}-\d{2}-\d{2}/.test(str)) return false;
+    const d = new Date(str);
+    return d instanceof Date && !isNaN(d); // valid date 
+  }
+
+  /**
+   * Generate time slots
+   * 
+   * @param {string} date 
+   * @param {string} timezone 
+   * 
+   * @returns array
+   */
+  #generateSlots(date, timezone) {
     // time slot start & end as per doctor timezone
     const slotStartDate = moment.tz(date + ' ' + this.doctorProfile.startHours, this.doctorProfile.timezone);
     const slotEndDate = moment.tz(date + ' ' + this.doctorProfile.endHours, this.doctorProfile.timezone);
-    // console.log(slotStartDate.format()); // in doctor timezone
-    // console.log(slotStartDate.utc().toISOString()); // converted to utc, to compare with database
 
     // convert to user's timezone
     const userSlotStartDate = slotStartDate.clone().tz(timezone);
     const userSlotEndDate = slotEndDate.clone().tz(timezone);
-    console.log({
-      statUnix: userSlotStartDate.unix(),
-      endUnix: userSlotEndDate.unix(),
-    })
-    // console.log('========= user slot start');
-    // console.log(userSlotStartDate.format());
-    // console.log(userSlotEndDate.format());
 
     const slots = [];
     let slotNumber = 0;
@@ -69,6 +86,48 @@ class EventService {
       }
     }
 
+    return slots;
+  }
+
+  /**
+   * Get freen slots
+   * 
+   * @param {string} date 
+   * @param {string} timezone 
+   * 
+   * @returns object
+   */
+  async freeSlots(date, timezone) {
+    // TODO: Integrate joi for request data validation
+    if (!date) {
+      throw new ApiError(this.statusCodeValidation, 'Date is required');
+    }
+    if (!this.#isDate(date)) {
+      throw new ApiError(this.statusCodeValidation, 'Date is invalid');
+    }
+    if (!timezone) {
+      throw new ApiError(this.statusCodeValidation, 'Timezone is required');
+    }
+
+    // time slot start & end as per doctor timezone
+    const slotStartDate = moment.tz(date + ' ' + this.doctorProfile.startHours, this.doctorProfile.timezone);
+    const slotEndDate = moment.tz(date + ' ' + this.doctorProfile.endHours, this.doctorProfile.timezone);
+    const existingEvents = await this.getAllEvents(slotStartDate.utc().toISOString(), slotEndDate.utc().toISOString());
+
+    let slots = this.#generateSlots(date, timezone);
+    if (existingEvents.data.length) {
+      existingEvents.data.forEach((event) => {
+        slots = slots.filter((item) => {
+          const slotUnix = moment(item).utc().unix();
+          if (slotUnix >= moment(event.start).utc().unix() && slotUnix <= moment(event.end).utc().unix()) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+      })
+    }
+
     return {
       doctorProfile: this.doctorProfile,
       slotTimezone: timezone,
@@ -76,6 +135,14 @@ class EventService {
     };
   }
 
+  /**
+   * Create event
+   * 
+   * @param {string} datetime 
+   * @param {string} duration 
+   * 
+   * @returns object
+   */
   async createEvent(datetime, duration) {
     try {
       // validate
@@ -83,7 +150,7 @@ class EventService {
       if (!datetime) { // start datetime in utc
         throw new ApiError(this.statusCodeValidation, 'Datetime is required');
       }
-      if (!this.isIsoDate(datetime)) {
+      if (!this.#isIsoDate(datetime)) {
         throw new ApiError(400, 'Datetime is invalid');
       }
       if (!duration) { // in minutes
@@ -139,6 +206,15 @@ class EventService {
     }
   }
 
+
+  /**
+   * Get all events by start and end date
+   * 
+   * @param {*} startDate 
+   * @param {*} endDate 
+   * 
+   * @returns object
+   */
   async getAllEvents(startDate, endDate) {
     try {
       // validate
@@ -146,13 +222,13 @@ class EventService {
       if (!startDate) {
         throw new ApiError(400, 'Start date is required');
       }
-      if (!this.isIsoDate(startDate)) {
+      if (!this.#isIsoDate(startDate)) {
         throw new ApiError(400, 'Start date is invalid');
       }
       if (!endDate) {
         throw new ApiError(400, 'End date is required');
       }
-      if (!this.isIsoDate(endDate)) {
+      if (!this.#isIsoDate(endDate)) {
         throw new ApiError(400, 'End date is invalid');
       }
 
@@ -170,7 +246,6 @@ class EventService {
           id: doc.id,
           start: moment.utc(data.start._seconds * 1000).toISOString(),
           end: moment.utc(data.end._seconds * 1000).toISOString(),
-          // data,
         });
       });
 
@@ -183,18 +258,6 @@ class EventService {
         throw new ApiError(500, error.message);
       }
     }
-  }
-
-  isIsoDate(str) {
-    if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
-    const d = new Date(str);
-    return d instanceof Date && !isNaN(d) && d.toISOString() === str; // valid date 
-  }
-
-  isDate(str) {
-    if (!/\d{4}-\d{2}-\d{2}/.test(str)) return false;
-    const d = new Date(str);
-    return d instanceof Date && !isNaN(d); // valid date 
   }
 }
 
